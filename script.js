@@ -1,6 +1,6 @@
 // === Configuration ===
-const apiKey = "INSÈRE_TA_CLÉ_API_ICI"; // OpenWeatherMap API key
-const city = "Paris"; // Tu peux changer la ville ici
+const defaultCity = "Paris";
+const defaultCoords = { lat: 48.8566, lon: 2.3522 };
 
 // === Éléments du DOM ===
 const weatherEl = document.getElementById("weather");
@@ -11,17 +11,42 @@ const photoInput = document.getElementById("photoInput");
 const tagsInput = document.getElementById("tagsInput");
 
 // === Météo ===
-async function loadWeather() {
+async function loadWeather(lat, lon, cityName = defaultCity) {
   try {
-    const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=fr&appid=${apiKey}`);
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`
+    );
     const data = await res.json();
-    const temp = Math.round(data.main.temp);
-    const desc = data.weather[0].description;
-    weatherEl.textContent = `À ${city}, il fait ${temp}°C et ${desc}.`;
+
+    const temp = Math.round(data.current.temperature_2m);
+    const desc = getWeatherDescription(data.current.weather_code);
+
+    weatherEl.textContent = `À ${cityName}, il fait ${temp}°C et ${desc}.`;
     suggestionEl.textContent = getOutfitSuggestion(temp);
   } catch (err) {
     weatherEl.textContent = "Impossible de charger la météo 😢";
   }
+}
+
+// Code météo → texte lisible
+function getWeatherDescription(code) {
+  const descriptions = {
+    0: "ciel dégagé",
+    1: "quelques nuages",
+    2: "nuageux",
+    3: "très nuageux",
+    45: "brouillard",
+    48: "brouillard givrant",
+    51: "bruine légère",
+    61: "pluie faible",
+    63: "pluie modérée",
+    65: "pluie forte",
+    71: "neige faible",
+    73: "neige modérée",
+    75: "neige forte",
+    95: "orages",
+  };
+  return descriptions[code] || "conditions indéterminées";
 }
 
 function getOutfitSuggestion(temp) {
@@ -76,5 +101,20 @@ photoInput.addEventListener("change", (e) => {
 });
 
 // === Initialisation ===
-loadWeather();
+function initWeather() {
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        loadWeather(lat, lon, "ta position");
+      },
+      () => loadWeather(defaultCoords.lat, defaultCoords.lon, defaultCity)
+    );
+  } else {
+    loadWeather(defaultCoords.lat, defaultCoords.lon, defaultCity);
+  }
+}
+
+initWeather();
 updateGallery();
