@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Madame Outfitt</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>👒 Madame Outfitt</h1>
+    <p id="weather">Chargement de la météo...</p>
+    <p id="suggestion" class="suggestion"></p>
+  </header>
+
+  <main>
+    <section class="upload-section">
+      <label for="photoInput" class="upload-btn">+ Ajouter une tenue</label>
+      <input type="file" id="photoInput" accept="image/*" hidden>
+      <input type="text" id="tagsInput" placeholder="Tags (ex: été, robe, voyage)" />
+    </section>
+
+    <section class="counter">
+      <p>Tu as <span id="outfitCount">0</span> tenues enregistrées.</p>
+    </section>
+
+    <section id="gallery" class="gallery"></section>
+  </main>
+
+  <footer>
+    <p>© 2025 Madame Outfitt – Ton dressing intelligent 💋</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
